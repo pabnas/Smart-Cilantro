@@ -1,0 +1,712 @@
+{% load static %}
+
+{% include '_head.html' %}
+{% include '_header.html' %}
+
+{% if planta.id == 0 %}
+    No Hay plantas Registradas
+{% else %}
+
+{% csrf_token %}
+<script>
+    function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                var csrftoken = getCookie('csrftoken');
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+            }
+    });
+</script>
+
+<div class="tabla">
+   <div class="container table">
+       <div class="row">
+
+            <div class="col-xl-3 mb-4">
+              <div class="card border-left-primary shadow py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-primary mb-1">
+                          <h6 class="m-0 font-weight-bold text-primary">Humedad</h6>
+                      </div>
+                      <div class="h2 mb-0 font-weight-bold text-gray-800">
+                          {{ last_medida.humedad }}
+                      </div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="far fa-tint fa-3x text-gray-300" style="color: #007bff;"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-3 mb-4">
+              <div class="card border-left-success shadow py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary mb-1">
+                          <h6 class="m-0 font-weight-bold text-success">Temperatura</h6>
+                      </div>
+                      <div class="h2 mb-0 font-weight-bold text-gray-800">
+                          {{ last_medida.temperatura }}
+                      </div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fal fa-thermometer-three-quarters fa-3x text-gray-300" style="color: #28a745;"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-3 mb-4">
+              <div class="card border-left-warning shadow py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                       <div class="text-xs font-weight-bold text-primary mb-1">
+                          <h6 class="m-0 font-weight-bold" style="color: #024A74;">Polucion</h6>
+                        </div>
+                        <div class="h2 mb-0 font-weight-bold text-gray-800">
+                          {{ last_medida.polucion }}
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fal fa-smog fa-3x text-gray-300" style="color: #024A74;"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-3 mb-4">
+              <div class="card border-left-warning shadow py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary mb-1">
+                          <h6 class="m-0 font-weight-bold" style="color: #3b8b09;">Luz</h6>
+                        </div>
+                        <div class="h2 mb-0 font-weight-bold text-gray-800">
+                          {{ last_medida.luz }}
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fal fa-lightbulb fa-3x text-gray-300" style="color: #3b8b09;"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+       </div>
+
+       <div class="row">
+           <div class="col-xl-8 col-lg-7">
+               <div class="card shadow mb-4">
+                    <!-- Card Header - Dropdown -->
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                      <h6 class="m-0 font-weight-bold text-primary">Medidas</h6>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                 <div class="container">
+                                    Fecha Inicio
+                                    <div class="row">
+                                        <div class='col-sm-12'>
+                                            <div class="input-group mb-3">
+                                              <input type="text" class="form-control" placeholder="años-mes-dia" id="fecha_inicio" readonly>
+                                              <div class="input-group-append">
+                                                <span class="input-group-text" id="boton_calendario_inicio">
+                                                    <i class="far fa-calendar-day"></i>
+                                                </span>
+                                              </div>
+                                            </div>
+                                        </div>
+
+                                        <script>
+                                            document.getElementById("boton_calendario_inicio").addEventListener('click',function(){MostrarCalendario1();});
+
+                                            function MostrarCalendario1(){
+                                                if(datepicker_inicio.hidden == true){
+                                                    datepicker_inicio.removeAttribute('hidden');
+                                                    datepicker_fin.setAttribute('hidden','');
+                                                }
+                                                else{
+                                                    datepicker_inicio.setAttribute('hidden','');
+                                                }
+                                            }
+                                        </script>
+                                    </div>
+
+                                    <div id="datepicker_inicio" hidden>
+                                            <script>
+                                                $(function () {
+                                                    $.datepicker.setDefaults($.datepicker.regional["es"]);
+                                                    $("#datepicker_inicio").datepicker({
+                                                    firstDay: 1,
+                                                    altField: "#fecha_inicio",
+                                                    altFormat: "yy-mm-dd",
+                                                    showButtonPanel: true,
+                                                    currentText: "Now",
+                                                    maxDate: 0,
+                                                    minDate: new Date(2019, 5, 1),
+                                                    monthNames: [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
+                                                    dayNamesMin: [ "Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa" ],
+                                                    defaultDate: -1,
+
+                                                    onSelect: function (date) {
+                                                        MostrarCalendario1();
+                                                        },
+                                                    });
+                                                });
+                                            </script>
+                                        </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="container">
+                                    Fecha Fin
+                                    <div class="row">
+                                        <div class='col-sm-12'>
+                                            <div class="input-group mb-3">
+                                              <input type="text" class="form-control" placeholder="años-mes-dia" id="fecha_fin" readonly>
+                                              <div class="input-group-append">
+                                                <span class="input-group-text" id="boton_calendario_fin">
+                                                    <i class="far fa-calendar-day"></i>
+                                                </span>
+                                              </div>
+                                            </div>
+                                        </div>
+
+                                        <script>
+                                            document.getElementById("boton_calendario_fin").addEventListener('click',function(){MostrarCalendario2();});
+
+                                            function MostrarCalendario2(){
+                                                if(datepicker_fin.hidden == true){
+                                                    datepicker_fin.removeAttribute('hidden');
+                                                    datepicker_inicio.setAttribute('hidden','');
+                                                }
+                                                else{
+                                                    datepicker_fin.setAttribute('hidden','');
+                                                }
+                                            }
+                                        </script>
+                                    </div>
+
+                                    <div id="datepicker_fin" hidden>
+                                            <script>
+                                                $(function () {
+                                                    $.datepicker.setDefaults($.datepicker.regional["es"]);
+                                                    $("#datepicker_fin").datepicker({
+                                                    firstDay: 1,
+                                                    altField: "#fecha_fin",
+                                                    altFormat: "yy-mm-dd",
+                                                    showButtonPanel: true,
+                                                    currentText: "Now",
+                                                    maxDate: 0,
+                                                    minDate: new Date(2019, 5, 1),
+                                                    monthNames: [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
+                                                    dayNamesMin: [ "Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa" ],
+
+                                                    onSelect: function (date) {
+                                                        MostrarCalendario2();
+                                                        },
+                                                    });
+                                                });
+                                            </script>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="text-center">
+                                    <button class="btn btn-success" type="button" name="button" onclick="pedir_datos()">
+                                        <i class="fas fa-chart-area"> Graficar</i>
+                                    </button>
+                                    <script>
+                                        function enviar_medidas()
+                                        {
+                                          url = 'home/datos';
+                                          $.ajax(url, {
+                                            type: "POST",
+                                            data:{
+                                                "fecha_inicio": $("#fecha_inicio").val(),
+                                                "fecha_fin": $("#fecha_fin").val(),
+                                                "planta_id": {{ planta.id }},
+                                            },
+                                            error: function(data){
+                                              console.log("");
+                                            },
+                                            success: function(data)
+                                            {
+                                              console.log(data.medidas[0]);
+                                              if(data.medidas.length == 0)
+                                              {
+                                                alert("No hay datos en ese rango de fechas");
+                                              }
+                                              else
+                                              {
+                                                  datasetluz.data = [];
+                                                  datasethumedad.data = [];
+                                                  datasettemp.data = [];
+                                                  datasetpolucion.data = [];
+
+                                                  for (i = 0;i < data.medidas.length; i++){
+                                                        var temp = { x: data.medidas[i].fecha , y:data.medidas[i].luz };
+                                                        datasetluz.data.push(temp);
+
+                                                        var temp = { x: data.medidas[i].fecha , y:data.medidas[i].humedad };
+                                                        datasethumedad.data.push(temp);
+
+                                                        var temp = { x: data.medidas[i].fecha , y:data.medidas[i].temperatura };
+                                                        datasettemp.data.push(temp);
+
+                                                        var temp = { x: data.medidas[i].fecha , y:data.medidas[i].polucion};
+                                                        datasetpolucion.data.push(temp);
+                                                  }
+                                              }
+
+                                              myChart1.update();
+                                              myChart2.update();
+                                              myChart3.update();
+                                              myChart4.update();
+                                            }
+                                          });
+                                        }
+
+                                        function pedir_datos(){
+                                            enviar_medidas();
+                                        }
+                                    </script>
+                                    <br><br>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <select class="browser-default custom-select" id="sensor" onchange="Cambiar()">
+                                  <option value="1">Humedad</option>
+                                  <option value="2">Temperatura</option>
+                                  <option value="3">Polución</option>
+                                  <option value="4">Luz</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="row" style="margin: 0px auto;">
+                            <canvas id="myChart1" style="display: block;" height="320" class="col-12"></canvas>
+                            <canvas id="myChart2" style="display: block;" height="320" class="col-12"></canvas>
+                            <canvas id="myChart3" style="display: block;" height="320" class="col-12"></canvas>
+                            <canvas id="myChart4" style="display: block;" height="320" class="col-12"></canvas>
+
+                            <script>
+                                $(function() {
+                                    $('#sensor').val("1");
+                                });
+
+                                var timeFormat = 'DD/MM/YYYY HH:mm:ss';
+
+                                var datasetluz = {
+                                    label: "Luz",
+                                    fill: true,
+                                    lineTension: 0.5,
+                                    data: [
+                                        {% for dato in medidas %}
+                                            {
+                                                x: "{{dato.fecha|date:'d/m/Y H:i:s'}}", y: {{dato.luz}}
+                                            },
+                                        {% endfor%}
+                                    ],
+                                    backgroundColor: [
+                                      "rgba(255,255,0, 0.2)"
+                                    ],
+                                    borderColor: [
+                                      "rgb(255,255,0)"
+                                    ],
+                                    borderWidth: 1.5
+                                }
+
+                                var datasethumedad = {
+                                    label: "Humedad",
+                                    fill: true,
+                                    lineTension: 0.5,
+                                    data: [
+                                        {% for dato in medidas %}
+                                            {
+                                                x: "{{dato.fecha|date:'d/m/Y H:i:s'}}", y: {{dato.humedad}}
+                                            },
+                                        {% endfor%}
+                                    ],
+                                    backgroundColor: [
+                                      "rgba( 0, 0, 255 , 0.2)"
+                                    ],
+                                    borderColor: [
+                                      "rgb( 0, 0, 255)"
+                                    ],
+                                    borderWidth: 1.5
+                                }
+
+                                var datasettemp = {
+                                    label: "Temperatura",
+                                    fill: true,
+                                    lineTension: 0.5,
+                                    data: [
+                                        {% for dato in medidas %}
+                                            {
+                                                x: "{{dato.fecha|date:'d/m/Y H:i:s'}}", y: {{dato.temperatura}}
+                                            },
+                                        {% endfor%}
+                                    ],
+                                    backgroundColor: [
+                                      "rgba(  0, 255, 0  , 0.2)"
+                                    ],
+                                    borderColor: [
+                                      "rgb(  0, 255, 0)"
+                                    ],
+                                    borderWidth: 1.5
+                                }
+
+                                var datasetpolucion = {
+                                    label: "Polución",
+                                    fill: true,
+                                    lineTension: 0.5,
+                                    data: [
+                                        {% for dato in medidas %}
+                                            {
+                                                x: "{{dato.fecha|date:'d/m/Y H:i:s'}}", y: {{dato.polucion}}
+                                            },
+                                        {% endfor%}
+                                    ],
+                                    backgroundColor: [
+                                      "rgba(  255, 116, 0 , 0.2)"
+                                    ],
+                                    borderColor: [
+                                      "rgba(  255, 116, 0 , 1)"
+                                    ],
+                                    borderWidth: 1.5
+                                }
+
+                                Chart.defaults.global.elements.point.backgroundColor = 'rgba(0, 0, 0, 0)';
+                                Chart.defaults.global.elements.point.borderColor = 'rgba(0, 0, 0, 0)';
+
+                                var ctx1 = document.getElementById("myChart1").getContext("2d");
+                                var myChart1 = new Chart(ctx1, {
+                                        type: "line",
+                                        options: {
+                                            responsive: false,
+                                            tooltips: {
+                                                mode: 'index',
+                                                intersect: false,
+                                              },
+                                            hover: {
+                                                mode: 'nearest',
+                                                intersect: true
+                                            },
+                                        scales: {
+                                            xAxes: [{
+                                                type:"time",
+                                                time:{
+                                                    format: timeFormat,
+                                                    tooltipFormat: 'LLL'
+                                                },
+                                                scaleLabel: {
+                                                    display: true,
+                                                    labelString: 'Fecha'
+                                                },
+                                                gridLines: {
+                                                    color: "rgba(0, 0, 0, 0)",
+                                                }
+                                            }],
+                                            yAxes: [{
+                                                scaleLabel: {
+                                                    display: true,
+                                                    labelString: 'Medida'
+                                                },
+                                            gridLines: {
+                                                color: "rgba(0, 0, 0, 0)",
+                                                }
+                                            }]
+                                        }
+                                        },
+                                        data: {
+                                            datasets:
+                                            [datasethumedad]
+                                        }
+                                    });
+                                var ctx2 = document.getElementById("myChart2").getContext("2d");
+                                var myChart2 = new Chart(ctx2, {
+                                        type: "line",
+                                        options: {
+                                            responsive: false,
+                                            tooltips: {
+                                                mode: 'index',
+                                                intersect: false,
+                                              },
+                                            hover: {
+                                                mode: 'nearest',
+                                                intersect: true
+                                            },
+                                        scales: {
+                                            xAxes: [{
+                                                type:"time",
+                                                time:{
+                                                    format: timeFormat,
+                                                    tooltipFormat: 'LLL'
+                                                },
+                                                scaleLabel: {
+                                                    display: true,
+                                                    labelString: 'Fecha'
+                                                },
+                                                gridLines: {
+                                                color: "rgba(0, 0, 0, 0)",
+                                                }
+                                            }],
+                                            yAxes: [{
+                                            scaleLabel: {
+                                                    display: true,
+                                                    labelString: 'Medida'
+                                                },
+                                            gridLines: {
+                                                color: "rgba(0, 0, 0, 0)",
+                                                }
+                                            }]
+                                        }
+                                        },
+                                        data: {
+                                            labels: [
+                                                {% for dato in medidas %}
+                                                    new Date("{{dato.fecha|date:'Y/m/d H:i'}}").toLocaleString(),
+                                                {% endfor%}
+                                            ],
+                                            datasets:
+                                            [datasettemp]
+                                        }
+                                    });
+                                var ctx3 = document.getElementById("myChart3").getContext("2d");
+                                var myChart3 = new Chart(ctx3, {
+                                        type: "line",
+                                        options: {
+                                            responsive: false,
+                                            tooltips: {
+                                                mode: 'index',
+                                                intersect: false,
+                                              },
+                                            hover: {
+                                                mode: 'nearest',
+                                                intersect: true
+                                            },
+                                        scales: {
+                                            xAxes: [{
+                                                type:"time",
+                                                time:{
+                                                    format: timeFormat,
+                                                    tooltipFormat: 'LLL'
+                                                },
+                                                scaleLabel: {
+                                                    display: true,
+                                                    labelString: 'Fecha'
+                                                },
+                                                gridLines: {
+                                                color: "rgba(0, 0, 0, 0)",
+                                                }
+                                            }],
+                                            yAxes: [{
+                                            scaleLabel: {
+                                                    display: true,
+                                                    labelString: 'Medida'
+                                                },
+                                            gridLines: {
+                                                color: "rgba(0, 0, 0, 0)",
+                                                }
+                                            }]
+                                        }
+                                        },
+                                        data: {
+                                            labels: [
+                                                {% for dato in medidas %}
+                                                    new Date("{{dato.fecha|date:'Y/m/d H:i'}}").toLocaleString(),
+                                                {% endfor%}
+                                            ],
+                                            datasets:
+                                            [datasetpolucion]
+                                        }
+                                    });
+                                var ctx4 = document.getElementById("myChart4").getContext("2d");
+                                var myChart4 = new Chart(ctx4, {
+                                        type: "line",
+                                        options: {
+                                        responsive: false,
+                                        tooltips: {
+                                            mode: 'index',
+                                            intersect: false,
+                                          },
+                                        hover: {
+                                            mode: 'nearest',
+                                            intersect: true
+                                        },
+                                        scales: {
+                                            xAxes: [{
+                                                type:"time",
+                                                time:{
+                                                    format: timeFormat,
+                                                    tooltipFormat: 'LLL'
+                                                },
+                                                scaleLabel: {
+                                                    display: true,
+                                                    labelString: 'Fecha'
+                                                },
+                                                gridLines: {
+                                                color: "rgba(0, 0, 0, 0)",
+                                                }
+                                            }],
+                                            yAxes: [{
+                                            scaleLabel: {
+                                                    display: true,
+                                                    labelString: 'Medida'
+                                                },
+                                            gridLines: {
+                                                color: "rgba(0, 0, 0, 0)",
+                                                }
+                                            }]
+                                        }
+                                        },
+                                        data: {
+                                            labels: [
+                                                {% for dato in medidas %}
+                                                    new Date("{{dato.fecha|date:'Y/m/d H:i'}}").toLocaleString(),
+                                                {% endfor%}
+                                            ],
+                                            datasets:
+                                            [datasetluz]
+                                        }
+                                    });
+
+                            </script>
+                            <script>
+                                $( document ).ready(function() {
+                                  $('#myChart2').attr("hidden", "");
+                                  $('#myChart3').attr("hidden", "");
+                                  $('#myChart4').attr("hidden", "");
+                                });
+
+                                function Cambiar() {
+                                  $('#myChart1').attr("hidden", "");
+                                  $('#myChart2').attr("hidden", "");
+                                  $('#myChart3').attr("hidden", "");
+                                  $('#myChart4').attr("hidden", "");
+                                  var x = document.getElementById("sensor").value;
+                                  if(x == "1"){
+                                    $("#myChart1"). removeAttr('hidden');
+                                  }
+                                  else if (x == "2"){
+                                    $("#myChart2"). removeAttr('hidden');
+                                  }
+                                  else if (x == "3"){
+                                    $("#myChart3"). removeAttr('hidden');
+                                  }
+                                  else{
+                                    $("#myChart4"). removeAttr('hidden');
+                                  }
+                                }
+                            </script>
+                        </div>
+                    </div>
+               </div>
+
+               <div class="row">
+                    <div class="col-xl-6 col-lg-7">
+                       <div class="card shadow mb-4">
+                            <!-- Card Header - Dropdown -->
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                              <h6 class="m-0 font-weight-bold text-primary">Alertas</h6>
+                            </div>
+                            <!-- Card Body -->
+                            <div class="card-body">
+                                <div class="container">
+                                  <div class="alert alert-success alert-dismissible">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    <strong>Success!</strong> This alert box could indicate a successful or positive action.
+                                  </div>
+                                </div>
+                            </div>
+                       </div>
+                    </div>
+
+                   <div class="col-xl-6 col-lg-7">
+                       <div class="card shadow mb-4">
+                            <!-- Card Header - Dropdown -->
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                              <h6 class="m-0 font-weight-bold text-primary">Documentos de ayuda</h6>
+                            </div>
+                            <!-- Card Body -->
+                            <div class="card-body">
+                                <div class="container">
+                                    <a href="static/pdf/cartilla1.pdf" target="_blank" class="h6 mb-0 text-dark">Cartilla Jardín Botánico - José Celestino Mutis Bogotá </a>
+                                    <br><br>
+                                    <a href="static/pdf/cartilla2.pdf" target="_blank" class="h6 mb-0 text-dark">Técnicas de agricultura urbana -  Ministerior de Agricultura Argentina </a>
+                                </div>
+                            </div>
+                       </div>
+                    </div>
+               </div>
+           </div>
+
+           <div class="col-xl-4 col-lg-5">
+               <div class="card shadow mb-4">
+                    <!-- Card Header - Dropdown -->
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                      <h6 class="m-0 font-weight-bold text-primary">Imagen En Vivo</h6>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                      <h5 class="h5 mb-0 font-weight-bold text-gray-800">{{ planta.tipo }}</h5>
+                      <div class="pt-4 pb-2 text-center">
+                        <img src="http://{{ planta.ruta_camara }}/?action=stream" width = "308" height="auto" onerror="this.onerror=null; this.src='{% static 'imagenes/prueba.jpeg'%}'">
+                      </div>
+                      <h7 class="h7 mb-0">
+                          Fecha de plantado: {{ planta.fecha_plantado|date:'Y/m/d H:i a' }}
+                      </h7>
+                    </div>
+               </div>
+
+               <div class="card shadow mb-4">
+                    <!-- Card Header - Dropdown -->
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                      <h6 class="m-0 font-weight-bold text-primary">Calendario</h6>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                      <div class="calendar">
+                        <iframe src="https://calendar.google.com/calendar/embed?src=5t41ksmm2nr9slfucl0kbrf9e0%40group.calendar.google.com&ctz=America%2FBogota" style="width:100%; border: 0" height="300" frameborder="0" scrolling="no">
+                        </iframe>
+                      </div>
+                    </div>
+               </div>
+           </div>
+        </div>
+
+   </div>
+</div>
+{% endif %}
+
+{% include '_footer.html' %}
+
+<a hidden>https://stackoverflow.com/questions/43604597/how-to-customize-the-tooltip-of-a-chart-js-2-0-doughnut-chart</a>
+
+
+

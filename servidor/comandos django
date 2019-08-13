@@ -1,0 +1,2 @@
+Para generar los modelos
+    python manage.py inspectdb > pages/models.py

@@ -1,0 +1,104 @@
+<div id="buscar_usuario" class="card-body mx-auto">
+    <h4 class="card-title mt-3 text-center">Cambio de privilegios</h4>
+
+    <section id="BuscarUsuario">
+        <div class="container">
+            <div class="d-flex justify-content-center">
+              <div class="searchbar">
+                <input class="search_input" type="text" name="" placeholder="Search...">
+                <a id="button_search" class="search_icon"><i class="fas fa-search"></i></a>
+              </div>
+            </div>
+          </div>
+    </section>
+
+    <section id="Encontrado" hidden>
+        <table class="table">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Username</th>
+            </tr>
+          </thead>
+
+          <tbody id="Listado">
+              <tr>
+                <td>@mdo</td>
+              </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+
+<script>
+    window.onload=function(){
+        document.getElementById("button_search").addEventListener('click',function(){ShowNewForm();});
+        //document.getElementById("myBtn").addEventListener('click',function(){HiddeNewForm();});
+       console.log('Resultados búsqueda');
+    };
+
+    function onbtnAgregarClick(terminar)
+    {
+        try{
+            AddEstudiante();
+            if(terminar==true)HiddeNewForm();
+        }catch(error)
+        {
+            console.error(error);
+        }
+    }
+
+    function HiddeNewForm(){
+        Encontrado.setAttribute('hidden','');
+    }
+
+    function ShowNewForm()
+    {
+        Encontrado.removeAttribute('hidden');
+    }
+</script>
+
+<style>
+
+    .searchbar{
+    margin-bottom: auto;
+    margin-top: auto;
+    height: 60px;
+    background-color: #353b48;
+    border-radius: 30px;
+    padding: 10px;
+    }
+
+    .search_input{
+    color: white;
+    border: 0;
+    outline: 0;
+    background: none;
+    width: 0;
+    caret-color:transparent;
+    line-height: 40px;
+    transition: width 0.4s linear;
+    }
+
+    .searchbar:hover > .search_input{
+    padding: 0 10px;
+    width: 450px;
+    caret-color:red;
+    transition: width 0.4s linear;
+    }
+
+    .searchbar:hover > .search_icon{
+    background: white;
+    color: #e74c3c;
+    }
+
+    .search_icon{
+    height: 40px;
+    width: 40px;
+    float: right;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    color:white;
+    }
+</style>
