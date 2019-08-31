@@ -1,0 +1,13 @@
+Para generar los modelos
+    python manage.py inspectdb > pages/models.py
+
+
+Heroku
+    https://codigofacilito.com/articulos/deploy-dajngo-heroku
+    rm -rf .git
+    heroku git:remote -a <nombre de tu aplicación heroku>
+
+    git init
+    git add .
+    git commit -m "first commit"
+    sudo git push heroku master
