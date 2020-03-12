@@ -1,0 +1,207 @@
+<div id="buscar_usuario" class="card-body mx-auto">
+    <h4 class="card-title mt-3 text-center">Cambio de privilegios</h4>
+
+    <section id="BuscarUsuario">
+        <div class="container">
+            <div class="d-flex justify-content-center">
+              <div class="searchbar">
+                <input id="username_buscar"class="search_input" type="text" placeholder="Buscar...">
+                <a id="button_search" class="search_icon"><i class="fas fa-search"></i></a>
+              </div>
+            </div>
+        </div>
+        <br>
+    </section>
+
+    <section id="Encontrado" hidden>
+        <table class="table">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Username</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Apellidos</th>
+              <th scope="col">Privilegios</th>
+              <th scope="col">Planta</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+            <tbody id="Listado">
+            </tbody>
+        </table>
+    </section>
+</div>
+
+<script>
+    window.onload=function(){
+       document.getElementById("button_search").addEventListener('click',function(){Buscar();});
+    };
+
+    function Buscar()
+    {
+        var username = $('#username_buscar').val();
+
+        $.ajax({
+           type: "GET",
+           url: "perfil/buscarusername",
+           data: {
+                "username": username
+           },
+           success: function(data) {
+                console.log(data);
+                if(data.usuarios.length == 0)
+                {
+                    alert("Usuario no encontrado");
+                }
+                else{
+
+                    Encontrado.removeAttribute('hidden');
+                    var html_tabla = '';
+                    for (i = 0;i < data.usuarios.length; i++){
+                        html_tabla += '<div><tr>';
+                        html_tabla += '<td>' + '<input type="text" value="' + data.usuarios[i].username + '" readonly>' + '</td>';
+                        html_tabla += '<td>' + '<input type="text" value="' + data.usuarios[i].nombre + '" readonly>'  + '</td>';
+                        html_tabla += '<td>' + '<input type="text" value="' + data.usuarios[i].apellidos + '" readonly>'  + '</td>';
+
+                        //logica roles
+                        html_tabla += '<td>' + '<select class="browser-default custom-select" disabled>';
+                        for (ro = 0;ro < data.roles.length; ro++){
+                            html_tabla += '<option value="' + data.roles[ro].ID + '"'
+                            if(data.usuarios[i].privilegios == data.roles[ro].ID){
+                                html_tabla += 'selected';
+                            }
+                            html_tabla += '>' + data.roles[ro].nombre + '</option>';
+                        }
+                        html_tabla += '</select> </td>';
+
+                        //logica planta
+                        html_tabla += '<td>' + '<select class="browser-default custom-select" disabled>';
+                        html_tabla += '<option value= ""> </option>';
+
+                        for (plt = 0;plt < data.plantas.length; plt++){
+                            html_tabla += '<option value="' + data.plantas[plt].id + '"'
+
+                            if(data.plantas[plt].usuarios.includes(data.usuarios[i].id)){
+                                html_tabla += 'selected';
+                            }
+                            html_tabla += '>' + data.plantas[plt].id + '. ' + data.plantas[plt].tipo + '</option>';
+                        }
+                        html_tabla += '</select> </td>';
+
+                        html_tabla += '<td>' +
+                        '<button type="button" class="btn btn-primary" onclick="Cambio_guardar(this)">Cambiar</button>' +
+                        '<button type="button" class="btn btn-secondary" hidden onclick="Cambio_guardar(this)">Guardar</button>' +
+                        '</td>';
+
+                        html_tabla += '</tr></div>';
+                    }
+                    document.getElementById('Listado').innerHTML = html_tabla;
+                }
+           },
+           failure: function(data){
+                console.log(data);
+           }
+        });
+    }
+
+    function Cambio_guardar(t){
+        var td = t.parentNode;
+        var tr = td.parentNode;
+        var buttons = td.childNodes;
+
+        buttons[0].hidden =! buttons[0].hidden;
+        buttons[1].hidden =! buttons[1].hidden;
+
+        if(buttons[1].hidden == false){
+            debugger;
+            var td = tr.childNodes;
+            td[1].childNodes[0].readOnly=false;
+            td[2].childNodes[0].readOnly=false;
+            td[3].childNodes[0].disabled=false;
+            td[4].childNodes[0].disabled=false;
+        }
+        else{
+            var td = tr.childNodes;
+            td[1].childNodes[0].readOnly=true;
+            td[2].childNodes[0].readOnly=true;
+            td[3].childNodes[0].disabled=true;
+            td[4].childNodes[0].disabled=true;
+
+            var username = td[0].childNodes[0].value;
+            var nombre = td[1].childNodes[0].value;
+            var apellido = td[2].childNodes[0].value;
+            var privilegios = td[3].childNodes[0].value;
+            var planta = td[4].childNodes[0].value;
+
+            if(nombre == "")
+            {
+                console.log("Nombre Vacio");
+                alert("Nombre Vacio por favor ingrese un valor");
+            }
+            else{
+                $.ajax({
+                       type: "POST",
+                       url: "perfil/actualizar_admin",
+                       data: {
+                            "username": username,
+                            "nombre": nombre,
+                            "apellido": apellido,
+                            "privilegios": privilegios,
+                            "planta": planta,
+                       },
+                       success: function() {
+                            alert("Datos Actualizados");
+                       },
+                       failure: function(data){
+                            alert(data);
+                       }
+                });
+            }
+        }
+    }
+</script>
+<style>
+
+    .searchbar{
+    margin-bottom: auto;
+    margin-top: auto;
+    height: 60px;
+    background-color: #288f38;
+    border-radius: 30px;
+    padding: 10px;
+    }
+
+    .search_input{
+    color: white;
+    border: 0;
+    outline: 0;
+    background: none;
+    width: 0;
+    caret-color:transparent;
+    line-height: 40px;
+    transition: width 0.4s linear;
+    }
+
+    .searchbar:hover > .search_input{
+    padding: 0 10px;
+    width: 450px;
+    caret-color:white;
+    transition: width 0.4s linear;
+    }
+
+    .searchbar:hover > .search_icon{
+    background: white;
+    color: #e74c3c;
+    }
+
+    .search_icon{
+    height: 40px;
+    width: 40px;
+    float: right;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    color:white;
+    }
+
+</style>

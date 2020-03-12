@@ -1,0 +1,118 @@
+{% if planta.id == 0 %}
+    <h4 class="card-title mt-3 text-center">No hay Plantas registradas</h4>
+{% else %}
+
+
+<div id="config_planta" class="card-body mx-auto">
+    <h4 class="card-title mt-3 text-center">Configuraciones</h4>
+
+    <section>
+        <div class="text-center">
+            <h6 class="card-title mt-3 text-center">Tiempo para la toma de datos
+            <input id="tiempo_datos" type="number" value="{{ configuracion.Tiempo_toma_de_datos }}" min="10" max="3600" autocomplete="off" onkeypress="validate(event,this)" >
+            <i class="far fa-question-circle" data-toggle="tooltip" data-placement="bottom" title="Tiempo que se da entre dato y dato; esta en segundos Min 10 - Max 3600"></i>
+            </h6>
+        </div>
+
+        <div class="text-center">
+            <h6 class="card-title mt-3 text-center">Limite para empezar a regar
+            <input id="riego_min" type="number" value="{{ configuracion.threshold_riego_min }}" min="1" max="100" autocomplete="off" onkeypress="validate(event,this)" step="0.01">
+            <i class="far fa-question-circle" data-toggle="tooltip" data-placement="bottom" title="Si se dectecta un valor menor se va a empezar a regar las plantas - Recomendado 30 - Rango 0 - 100"></i>
+            </h6>
+        </div>
+
+        <div class="text-center">
+            <h6 class="card-title mt-3 text-center">Limite para parar a regar
+            <input id="riego_max" type="number" value="{{ configuracion.threshold_riego_max }}" min="1" max="100" autocomplete="off" onkeypress="validate(event,this)" step="0.01">
+            <i class="far fa-question-circle" data-toggle="tooltip" data-placement="bottom" title="Si se detecta un valor mayor se para de regar las plantas - Recomendado 60 - Rango 0 - 100"></i>
+            </h6>
+        </div>
+
+        <div class="text-center">
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary" onclick="reestablecer()">Reestablecer</button>
+                <button type="button" class="btn btn-success" onclick="Guardar()">Guardar</button>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    var t_ini = {{ configuracion.Tiempo_toma_de_datos }};
+    var r_min_ini = {{ configuracion.threshold_riego_min  }};
+    var r_max_ini = {{ configuracion.threshold_riego_max }}
+
+    function reestablecer()
+    {
+        $('#tiempo_datos').val(t_ini);
+        $('#riego_min').val(r_min_ini);
+        $('#riego_max').val(r_max_ini);
+    }
+
+    function Guardar()
+    {
+        var tiempo = Math.ceil($('#tiempo_datos').val());
+        var riego_min = Number($('#riego_min').val());
+        var riego_max = Number($('#riego_max').val());
+
+        debugger;
+        if(riego_max > Number($('#riego_max').attr('max')) || riego_max < Number($('#riego_max').attr('min')))
+        {
+            alert("el valor de riego maximo esta fuera del limite");
+        }
+        else if (riego_min > Number($('#riego_min').attr('max')) || riego_min < Number($('#riego_min').attr('min')))
+        {
+            alert("el valor de riego minimo esta fuera del limite");
+        }
+        else if (tiempo >  Number($('#tiempo_datos').attr('max')) || tiempo < Number($('#tiempo_datos').attr('min')))
+        {
+            alert("el valor de tiempo esta fuera del limite");
+        }
+        else{
+            url = 'perfil/saveconfig';
+              $.ajax(url, {
+                type: "POST",
+                data:{
+                    "tiempo": tiempo,
+                    "riego_min": riego_min,
+                    "riego_max": riego_max,
+                    "id_planta": {{ planta.id}},
+                },
+                error: function(data){
+                  console.log(data);
+                },
+                success: function(data)
+                {
+                    r_max_ini = riego_max;
+                    r_min_ini = riego_min ;
+                    t_ini = tiempo;
+
+                    $('#tiempo_datos').val(t_ini);
+                    alert(data.result);
+                }
+              });
+        }
+    }
+
+    function validate(evt,t) {
+      var theEvent = evt || window.event;
+
+      if (theEvent.type === 'paste') {
+        key = event.clipboardData.getData('text/plain');
+      } else {
+      // Handle key press
+          var key = theEvent.keyCode || theEvent.which;
+          key = String.fromCharCode(key);
+      }
+      debugger;
+      var regex = /[0-9]|\./;
+      var a = t.min
+      a = 0
+      if( !regex.test(key) || parseFloat(t.value+key) > parseFloat(t.max) || parseFloat(t.value+key) < parseFloat(a)) {
+        theEvent.returnValue = false;
+        if(theEvent.preventDefault) theEvent.preventDefault();
+      }
+    }
+</script>
+
+{% endif %}
